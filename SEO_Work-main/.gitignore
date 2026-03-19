@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+# Env
+.env
+.env.*
+
+# Logs & output
+logs/
+data/output/
+
+# OS
+.DS_Store
+Thumbs.db
+
+
+data/
+
+node_modules/
+.env
+
+# Ignore audit reports and json logs
+Version 3.1/kb/audits/audit_history.json
+Version 3.1/kb/audits/
+Version 3.1/kb/audits/chat_memory.json
+Version 3.1/kb/reports/
+reports/
+Version 3.1/kb/kb_index.json
+
+.db
+
+
+Version 3.1/kb/**/*.json
+!Version 3.1/kb/criteria.json
+
+# Ignore all audits folder
+Version 3.1/kb/audits/
+
+# Ignore database files
+*.db
+
+
+venv-uni
+rank_tracker.db
+package.json
+package-lock.json
