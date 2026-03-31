@@ -28,7 +28,7 @@ huggingface-hub==0.33.1
 keybert==0.9.0
 numpy==1.26.4
 pandas==2.2.3
-pydantic==2.11.5
+pydantic>=2.0.0,<2.11
 regex==2024.11.6
 safetensors==0.5.3
 scikit-learn==1.6.1
