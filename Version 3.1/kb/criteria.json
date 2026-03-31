@@ -1,0 +1,218 @@
+{
+  "robots_txt": {
+    "description": "robots.txt should be accessible and properly configured.",
+    "validation_type": "existence_check",
+    "validation_params": {},
+    "remediation": "Ensure robots.txt is accessible and allows important pages."
+  },
+  "xml_sitemap": {
+    "description": "XML sitemap should be accessible and list indexable URLs.",
+    "validation_type": "existence_check",
+    "validation_params": {},
+    "remediation": "Provide a valid XML sitemap and submit it to search engines."
+  },
+  "canonical_tag": {
+    "description": "Canonical tag should be present and correct.",
+    "validation_type": "existence_check",
+    "validation_params": {},
+    "remediation": "Add a self-referencing canonical tag."
+  },
+  "og_tags": {
+    "description": "Open Graph tags should be present.",
+    "validation_type": "detection_check",
+    "validation_params": {},
+    "remediation": "Add Open Graph tags for rich previews."
+  },
+  "hreflang_tags": {
+    "description": "Hreflang tags should be present for multi-language sites.",
+    "validation_type": "detection_check",
+    "validation_params": {},
+    "remediation": "Add hreflang tags for language targeting."
+  },
+  "site_hierarchy": {
+    "description": "Logical site hierarchy with shallow URL depth.",
+    "validation_type": "analysis_check",
+    "validation_params": {},
+    "remediation": "Keep important pages within 3 clicks / shallow paths."
+  },
+  "internal_linking": {
+    "description": "Internal linking should be present.",
+    "validation_type": "count_check",
+    "validation_params": {},
+    "remediation": "Add internal links to key pages."
+  },
+  "breadcrumbs": {
+    "description": "Breadcrumb navigation improves UX and SEO.",
+    "validation_type": "detection_check",
+    "validation_params": {},
+    "remediation": "Add breadcrumb navigation and Schema.org markup."
+  },
+  "responsive_design": {
+    "description": "Page should be mobile responsive.",
+    "validation_type": "detection_check",
+    "validation_params": {},
+    "remediation": "Ensure mobile responsive layout and viewport meta."
+  },
+  "no_intrusive_interstitials": {
+    "description": "Avoid intrusive interstitials on mobile.",
+    "validation_type": "detection_check",
+    "validation_params": {},
+    "remediation": "Remove or delay intrusive popups."
+  },
+  "ssl_certificate": {
+    "description": "Site should be served over HTTPS.",
+    "validation_type": "existence_check",
+    "validation_params": {},
+    "remediation": "Enable SSL and redirect HTTP to HTTPS."
+  },
+  "mixed_content": {
+    "description": "No mixed content warnings on HTTPS pages.",
+    "validation_type": "detection_check",
+    "validation_params": {},
+    "remediation": "Ensure all resources load over HTTPS."
+  },
+  "heading_tags": {
+    "description": "Heading tags should follow a logical structure.",
+    "validation_type": "count_check",
+    "validation_params": {},
+    "remediation": "Ensure a single H1 and logical H2/H3 usage."
+  },
+  "heading_text_analysis": {
+    "description": "Heading text should align with intent and keywords.",
+    "validation_type": "analysis_check",
+    "validation_params": {},
+    "remediation": "Use question-based or intent-aligned headings."
+  },
+  "meta_title": {
+    "description": "Meta title should be under 60 characters.",
+    "validation_type": "length_check",
+    "validation_params": { "min_length": 10, "max_length": 60 },
+    "remediation": "Adjust the meta title to be within recommended length."
+  },
+  "meta_description": {
+    "description": "Meta description should be under 160 characters.",
+    "validation_type": "length_check",
+    "validation_params": { "min_length": 50, "max_length": 160 },
+    "remediation": "Adjust the meta description to be within recommended length."
+  },
+  "image_alt_text": {
+    "description": "Images should have alt text.",
+    "validation_type": "detection_check",
+    "validation_params": {},
+    "remediation": "Add descriptive alt text to images."
+  },
+  "hidden_content": {
+    "description": "Avoid hidden content for users or crawlers.",
+    "validation_type": "detection_check",
+    "validation_params": {},
+    "remediation": "Remove hidden content or ensure visibility."
+  },
+  "keyword_density": {
+    "description": "Keyword density should be within recommended range.",
+    "validation_type": "analysis_check",
+    "validation_params": {},
+    "remediation": "Adjust keyword usage to a natural 3–5% range."
+  },
+  "duplicate_content": {
+    "description": "Avoid duplicate or highly similar content.",
+    "validation_type": "similarity_check",
+    "validation_params": { "similarity_threshold": 0.5 },
+    "remediation": "Use canonicalization or rewrite duplicate content."
+  },
+  "similar_urls": {
+    "description": "Detect similar URLs based on content similarity.",
+    "validation_type": "analysis_check",
+    "validation_params": {},
+    "remediation": "Canonicalize or differentiate similar pages."
+  },
+  "thin_content": {
+    "description": "Avoid thin or low-quality content.",
+    "validation_type": "analysis_check",
+    "validation_params": {},
+    "remediation": "Expand content to be meaningful and substantial."
+  },
+  "server_logs": {
+    "description": "Server log analysis for crawl optimization.",
+    "validation_type": "analysis_check",
+    "validation_params": {},
+    "remediation": "Analyze server logs to improve crawl efficiency."
+  },
+  "crawl_traps": {
+    "description": "Avoid crawl traps.",
+    "validation_type": "analysis_check",
+    "validation_params": {},
+    "remediation": "Avoid infinite URL patterns and parameter traps."
+  },
+  "errors_404": {
+    "description": "No 404 errors should be present.",
+    "validation_type": "analysis_check",
+    "validation_params": {},
+    "remediation": "Fix broken pages or redirect appropriately."
+  },
+  "broken_links": {
+    "description": "No broken links should be present.",
+    "validation_type": "analysis_check",
+    "validation_params": {},
+    "remediation": "Fix internal and external broken links."
+  },
+  "redirect_chains": {
+    "description": "Avoid redirect chains and loops.",
+    "validation_type": "analysis_check",
+    "validation_params": {},
+    "remediation": "Reduce redirect chains and fix loops."
+  },
+  "schema_markup": {
+    "description": "Schema markup should be present and valid.",
+    "validation_type": "detection_check",
+    "validation_params": {},
+    "remediation": "Add JSON-LD schema markup matching visible content."
+  },
+  "ga_setup": {
+    "description": "Google Analytics setup should be present.",
+    "validation_type": "detection_check",
+    "validation_params": {},
+    "remediation": "Install GA4 or GTM tracking."
+  },
+  "gsc_setup": {
+    "description": "Google Search Console verification should be present.",
+    "validation_type": "detection_check",
+    "validation_params": {},
+    "remediation": "Verify site ownership in Google Search Console."
+  },
+  "eeat": {
+    "description": "E-E-A-T analysis for blog pages.",
+    "validation_type": "analysis_check",
+    "validation_params": {},
+    "remediation": "Add author info, credentials, and trust signals."
+  },
+  "geo_friendly": {
+    "description": "GEO-friendly content structure.",
+    "validation_type": "analysis_check",
+    "validation_params": {},
+    "remediation": "Use short paragraphs and clear headings."
+  },
+  "faq_in_blog": {
+    "description": "FAQ section in blog posts.",
+    "validation_type": "detection_check",
+    "validation_params": {},
+    "remediation": "Add FAQ section with schema markup."
+  },
+  "llms_txt": {
+    "description": "LLMS.txt should be present.",
+    "validation_type": "existence_check",
+    "validation_params": {},
+    "remediation": "Add /llms.txt file for AI access rules."
+  },
+  "ai_visibility": {
+    "description": "AI visibility readiness checks.",
+    "validation_type": "analysis_check",
+    "validation_params": {},
+    "remediation": "Add conversational tone, citations, and first-hand experience."
+  },
+  "page_speed": {
+    "description": "Core Web Vitals and performance metrics.",
+    "validation_type": "analysis_check",
+    "validation_params": {},
+    "remediation": "Improve LCP, INP, CLS and mobile performance."
+  }
+}
