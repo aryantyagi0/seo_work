@@ -1,0 +1,375 @@
+# Complete reference for all 38 SEO audit columns
+# Maps each column to required metrics and primitive operations
+
+columns:
+  "Robots.txt configured correctly":
+    description: "Check if robots.txt file exists, is valid, and properly configured"
+    required_metrics:
+      - file_exists
+      - file_content
+      - syntax_valid
+      - has_sitemap_reference
+    primitive_chain:
+      - FETCH: {url: "https://domain.com/robots.txt", method: "GET", resource_type: "text"}
+      - VALIDATE: {data: "$robots_content", rule: "matches_pattern"}
+      - SELECT: {content: "$robots_content", selector: "regex:Sitemap:", mode: "exists"}
+    
+  "XML Sitemap updated & submitted":
+    description: "Verify sitemap.xml exists, is valid XML, and contains the current URL"
+    required_metrics:
+      - file_exists
+      - xml_valid
+      - url_count
+      - contains_current_url
+    primitive_chain:
+      - FETCH: {url: "https://domain.com/sitemap.xml", method: "GET"}
+      - VALIDATE: {data: "$sitemap_content", rule: "is_valid_xml"}
+      - TRANSFORM: {data: "$sitemap_content", operation: "parse_xml"}
+      - SELECT: {content: "$parsed_xml", selector: "//url/loc", mode: "many"}
+  
+  "Canonical tags implemented":
+    description: "Check if canonical tag exists and is self-referential"
+    required_metrics:
+      - canonical_exists
+      - canonical_url
+      - is_self_referential
+      - uses_https
+    primitive_chain:
+      - SELECT: {content: "$page_html", selector: "link[rel='canonical']", mode: "one"}
+      - EXTRACT: {element: "$canonical_element", attribute: "href"}
+      - COMPARE: {value1: "$canonical_url", value2: "$current_url", operator: "=="}
+  
+  "Logical site hierarchy":
+    description: "Analyze URL structure and breadcrumb implementation"
+    required_metrics:
+      - url_depth
+      - breadcrumb_exists
+      - hierarchy_score
+    primitive_chain:
+      - TRANSFORM: {data: "$current_url", operation: "extract_domain"}
+      - MEASURE: {data: "$current_url", metric: "depth"}
+      - SELECT: {content: "$page_html", selector: "nav[aria-label='breadcrumb']", mode: "exists"}
+  
+  "Internal linking optimization":
+    description: "Count internal links and assess anchor text quality"
+    required_metrics:
+      - total_links
+      - internal_links_count
+      - anchor_text_quality
+    primitive_chain:
+      - FETCH: {url: "$current_url", render_js: true}
+      - SELECT: {content: "$page_html", selector: "a[href]", mode: "many"}
+      - EXTRACT: {element: "$all_links", attribute: "href"}
+      - AGGREGATE: {collection: "$link_urls", operation: "filter"}
+  
+  "Breadcrumb navigation":
+    description: "Check breadcrumb presence and schema markup"
+    required_metrics:
+      - breadcrumb_exists
+      - breadcrumb_schema_exists
+    primitive_chain:
+      - SELECT: {content: "$page_html", selector: "nav[aria-label='breadcrumb']", mode: "exists"}
+      - SELECT: {content: "$page_html", selector: "script[type='application/ld+json']", mode: "many"}
+      - EXTRACT: {element: "$schemas", attribute: "text"}
+  
+  "Responsive design":
+    description: "Verify viewport meta tag and media queries"
+    required_metrics:
+      - viewport_meta_exists
+      - viewport_content
+    primitive_chain:
+      - SELECT: {content: "$page_html", selector: "meta[name='viewport']", mode: "one"}
+      - EXTRACT: {element: "$viewport_meta", attribute: "content"}
+  
+  "No intrusive interstitials":
+    description: "Detect popups, modals, and overlays"
+    required_metrics:
+      - popup_detected
+      - modal_count
+    primitive_chain:
+      - FETCH: {url: "$current_url", render_js: true}
+      - SELECT: {content: "$page_html", selector: "[class*='modal'], [class*='popup']", mode: "many"}
+      - MEASURE: {data: "$popup_elements", metric: "count"}
+  
+  "SSL certificate active":
+    description: "Verify HTTPS protocol and certificate validity"
+    required_metrics:
+      - uses_https
+      - certificate_valid
+    primitive_chain:
+      - TRANSFORM: {data: "$current_url", operation: "extract_protocol"}
+      - COMPARE: {value1: "$protocol", value2: "https", operator: "=="}
+  
+  "No mixed content warnings":
+    description: "Check for HTTP resources on HTTPS pages"
+    required_metrics:
+      - http_resource_count
+      - mixed_content_detected
+    primitive_chain:
+      - FETCH: {url: "$current_url", render_js: true}
+      - SELECT: {content: "$page_html", selector: "img[src^='http:'], script[src^='http:'], link[href^='http:']", mode: "many"}
+      - MEASURE: {data: "$http_resources", metric: "count"}
+  
+  "Meta Title <60 Characters Including Space>":
+    description: "Analyze meta title length, uniqueness, and relevance"
+    required_metrics:
+      - title_text
+      - title_length
+      - is_optimal
+      - duplicate_pages
+    primitive_chain:
+      - SELECT: {content: "$page_html", selector: "title", mode: "one"}
+      - EXTRACT: {element: "$title_element", attribute: "text"}
+      - MEASURE: {data: "$title_text", metric: "length"}
+      - COMPARE: {value1: "$title_length", value2: 60, operator: "<="}
+      - SEARCH: {query: "$title_text", corpus: "all_titles", method: "exact"}
+  
+  "Meta Description <160 Characters Including Space>":
+    description: "Analyze meta description length, uniqueness, and appeal"
+    required_metrics:
+      - description_text
+      - description_length
+      - is_optimal
+      - has_cta
+    primitive_chain:
+      - SELECT: {content: "$page_html", selector: "meta[name='description']", mode: "one"}
+      - EXTRACT: {element: "$desc_element", attribute: "content"}
+      - MEASURE: {data: "$desc_text", metric: "length"}
+      - COMPARE: {value1: "$desc_length", value2: 160, operator: "<="}
+  
+  "Heading Tags(H1/H2/h3)":
+    description: "Count H1, H2, H3 tags and validate hierarchy"
+    required_metrics:
+      - h1_count
+      - h2_count
+      - h3_count
+      - hierarchy_valid
+    primitive_chain:
+      - SELECT: {content: "$page_html", selector: "h1, h2, h3", mode: "many"}
+      - MEASURE: {data: "$headings", metric: "count"}
+  
+  "Heading Tags Text(H1/H2/h3)":
+    description: "Extract and analyze heading text content"
+    required_metrics:
+      - heading_texts
+      - keyword_presence
+      - quality_score
+    primitive_chain:
+      - SELECT: {content: "$page_html", selector: "h1, h2, h3", mode: "many"}
+      - EXTRACT: {element: "$headings", attribute: "text"}
+      - REASON: {context: "$heading_texts", question: "Are headings descriptive and well-structured?"}
+  
+  "Image Alt Text & Tag":
+    description: "Check image alt text coverage and quality"
+    required_metrics:
+      - total_images
+      - images_with_alt
+      - alt_coverage_percentage
+    primitive_chain:
+      - FETCH: {url: "$current_url", render_js: true}
+      - SELECT: {content: "$page_html", selector: "img", mode: "many"}
+      - EXTRACT: {element: "$images", attribute: "alt"}
+      - AGGREGATE: {collection: "$alt_texts", operation: "filter_empty"}
+  
+  "Hidden Content":
+    description: "Detect hidden or cloaked content"
+    required_metrics:
+      - hidden_element_count
+      - cloaking_detected
+    primitive_chain:
+      - SELECT: {content: "$page_html", selector: "[style*='display:none'], [hidden]", mode: "many"}
+      - MEASURE: {data: "$hidden_elements", metric: "count"}
+  
+  "Keyword Density":
+    description: "Calculate keyword frequency and density"
+    required_metrics:
+      - top_keywords
+      - keyword_density_percentages
+    primitive_chain:
+      - EXTRACT: {element: "$page_soup", attribute: "text"}
+      - TRANSFORM: {data: "$page_text", operation: "lowercase"}
+      - MEASURE: {data: "$cleaned_text", metric: "frequency"}
+  
+  "Duplicate content check":
+    description: "Find similar pages using FAISS semantic search"
+    required_metrics:
+      - similar_pages
+      - similarity_scores
+    primitive_chain:
+      - EXTRACT: {element: "$page_soup", attribute: "text"}
+      - SEARCH: {query: "$main_text", corpus: "all_texts", method: "semantic"}
+  
+  "Thin content audit":
+    description: "Assess content depth and value"
+    required_metrics:
+      - word_count
+      - is_thin_content
+      - content_quality
+    primitive_chain:
+      - EXTRACT: {element: "$page_soup", attribute: "text"}
+      - MEASURE: {data: "$main_text", metric: "word_count"}
+      - COMPARE: {value1: "$word_count", value2: 200, operator: ">="}
+  
+  "Analyze server logs":
+    description: "BYPASS - Requires backend access"
+    bypass: true
+    status: "Not Audited"
+    reason: "Requires backend server access"
+  
+  "Avoid crawl traps":
+    description: "Detect infinite scroll, faceted navigation, session IDs"
+    required_metrics:
+      - crawl_trap_detected
+      - risk_score
+    primitive_chain:
+      - FETCH: {url: "$current_url", render_js: true}
+      - SELECT: {content: "$page_html", selector: "[class*='infinite-scroll']", mode: "exists"}
+      - TRANSFORM: {data: "$current_url", operation: "extract_params"}
+  
+  "404 Errors":
+    description: "Check page status and broken outbound links"
+    required_metrics:
+      - current_page_status
+      - broken_links_count
+    primitive_chain:
+      - COMPARE: {value1: "$status_code", value2: 404, operator: "=="}
+      - SELECT: {content: "$page_html", selector: "a[href]", mode: "many"}
+  
+  "Broken Links":
+    description: "Test all links for validity"
+    required_metrics:
+      - total_links
+      - broken_links
+    primitive_chain:
+      - FETCH: {url: "$current_url", render_js: true}
+      - SELECT: {content: "$page_html", selector: "a[href]", mode: "many"}
+      - EXTRACT: {element: "$links", attribute: "href"}
+  
+  "Avoid redirect chains/loops":
+    description: "Analyze redirect chains"
+    required_metrics:
+      - redirect_count
+      - redirect_chain
+      - loop_detected
+    primitive_chain:
+      - FETCH: {url: "$current_url", render_js: true}
+      - MEASURE: {data: "$redirect_chain", metric: "count"}
+  
+  "Schema markup implemented":
+    description: "Check for JSON-LD schema and validate"
+    required_metrics:
+      - schema_exists
+      - schema_types
+      - json_valid
+    primitive_chain:
+      - SELECT: {content: "$page_html", selector: "script[type='application/ld+json']", mode: "many"}
+      - EXTRACT: {element: "$schema_scripts", attribute: "text"}
+      - VALIDATE: {data: "$json_content", rule: "is_valid_json"}
+  
+  "Open Graph & Twitter cards":
+    description: "Verify social meta tags"
+    required_metrics:
+      - og_tags_count
+      - twitter_card_exists
+    primitive_chain:
+      - SELECT: {content: "$page_html", selector: "meta[property^='og:']", mode: "many"}
+      - SELECT: {content: "$page_html", selector: "meta[name^='twitter:']", mode: "many"}
+  
+  "Hreflang tags implemented":
+    description: "Check hreflang tags and language codes"
+    required_metrics:
+      - hreflang_exists
+      - language_codes
+      - self_referential
+    primitive_chain:
+      - SELECT: {content: "$page_html", selector: "link[rel='alternate'][hreflang]", mode: "many"}
+      - EXTRACT: {element: "$hreflang_tags", attribute: "hreflang"}
+  
+  "Consistent language targeting":
+    description: "Verify HTML lang matches content"
+    required_metrics:
+      - html_lang
+      - language_consistency
+    primitive_chain:
+      - SELECT: {content: "$page_html", selector: "html", mode: "one"}
+      - EXTRACT: {element: "$html_element", attribute: "lang"}
+  
+  "Google Analytics/GA4 setup":
+    description: "Detect GA4 or GTM tracking codes"
+    required_metrics:
+      - ga4_detected
+      - measurement_id
+    primitive_chain:
+      - FETCH: {url: "$current_url", render_js: true}
+      - SELECT: {content: "$page_html", selector: "regex:G-[A-Z0-9]{10}", mode: "many"}
+  
+  "Google Search Console setup":
+    description: "Check GSC verification tag"
+    required_metrics:
+      - gsc_verified
+      - verification_method
+    primitive_chain:
+      - FETCH: {url: "$current_url", render_js: true}
+      - SELECT: {content: "$page_html", selector: "meta[name='google-site-verification']", mode: "one"}
+  
+  "EEAT(Expereince, Expertise, Authoritativeness, and Trustworthiness)":
+    description: "Analyze EEAT signals"
+    required_metrics:
+      - author_exists
+      - credentials_displayed
+      - eeat_score
+    primitive_chain:
+      - SELECT: {content: "$page_html", selector: "[class*='author']", mode: "many"}
+      - REASON: {context: "$page_content", question: "Does this page demonstrate EEAT signals?"}
+  
+  "GEO Friendly(readiness for AI search engines)":
+    description: "Check FAQ schema and natural language optimization"
+    required_metrics:
+      - faq_schema_exists
+      - ai_readability_score
+    primitive_chain:
+      - FETCH: {url: "$current_url", render_js: true}
+      - SELECT: {content: "$page_html", selector: "script[type='application/ld+json']", mode: "many"}
+      - REASON: {context: "$page_text", question: "Is this content optimized for AI engines?"}
+  
+  "FAQ In Blog":
+    description: "Check FAQPage schema"
+    required_metrics:
+      - faq_schema_exists
+      - question_count
+    primitive_chain:
+      - SELECT: {content: "$page_html", selector: "script[type='application/ld+json']", mode: "many"}
+      - EXTRACT: {element: "$schemas", attribute: "text"}
+  
+  "LLMS.text File":
+    description: "Check if llms.txt file exists"
+    required_metrics:
+      - file_exists
+      - content_valid
+    primitive_chain:
+      - FETCH: {url: "https://domain.com/llms.txt", method: "GET"}
+      - VALIDATE: {data: "$llms_content", rule: "matches_pattern"}
+  
+  "Largest Contentful Paint (LCP)":
+    description: "BYPASS - Lighthouse disabled"
+    bypass: true
+    status: "Not Audited"
+    reason: "Lighthouse functionality disabled"
+  
+  "First Input Delay (FID/INP)":
+    description: "BYPASS - Lighthouse disabled"
+    bypass: true
+    status: "Not Audited"
+    reason: "Lighthouse functionality disabled"
+  
+  "Cumulative Layout Shift (CLS)":
+    description: "BYPASS - Lighthouse disabled"
+    bypass: true
+    status: "Not Audited"
+    reason: "Lighthouse functionality disabled"
+  
+  "Mobile page speed performance":
+    description: "BYPASS - Lighthouse disabled"
+    bypass: true
+    status: "Not Audited"
+    reason: "Lighthouse functionality disabled"
